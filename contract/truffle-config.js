@@ -30,6 +30,11 @@ module.exports = {
             provider: new HDWalletProvider(env.MNEMONIC, "https://rinkeby.infura.io/", 0, 10),
             skipDryRun: true,
             network_id: 4
+        },
+        mainnet: {
+            provider: new HDWalletProvider(env.MNEMONIC, "https://mainnet.infura.io/1u84gV2YFYHHTTnh8uVl", 0, 10),
+            skipDryRun: true,
+            network_id: 1
         }
     },
 };

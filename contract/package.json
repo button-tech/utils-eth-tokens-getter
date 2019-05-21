@@ -12,6 +12,8 @@
   "author": "krboktv",
   "license": "ISC",
   "dependencies": {
+    "assert": "^2.0.0",
+    "fs": "0.0.1-security",
     "truffle-hdwallet-provider": "^1.0.9"
   }
 }
