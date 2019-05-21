@@ -1,23 +1,25 @@
-const addresses = require("./addresses.json").addresses;
-console.log("We have: " + addresses.length + " addresses");
+const addresses = require("./addresses.json");
 
 const Balance = artifacts.require("Balance");
-const contractAddress = '0x74Cb34D5a97c808b02a5F56631a21c822CEa1204';
-
+const balanceContractAddress = '0x74Cb34D5a97c808b02a5F56631a21c822CEa1204';
 
 module.exports = async function() {
-
-    const balance = await Balance.at(contractAddress);
-
-    async function getBalances(addresses) {
-        const t = timer("getBalances");
-       await balance.getBalance(addresses);
-        t.stop();
-    }
-
     try {
-        await getBalances(addresses);
-        process.exit(1);
+
+        const balance = await Balance.at(balanceContractAddress);
+
+        async function getBalances(tokenAddress, addresses) {
+            console.log(`We have ${addresses.length} addresses for ${tokenAddress}`);
+            const t = timer("getBalances");
+            await balance.getBalance(addresses);
+            t.stop();
+        }
+
+        for (let i in addresses) {
+            await getBalances(i, addresses[i]);
+            if (i === Object.keys(addresses)[Object.keys(addresses).length - 1])
+                process.exit(1);
+        }
     } catch (e) {
         console.log(e)
     }
