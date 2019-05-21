@@ -24,7 +24,10 @@ func LookForTokens(c *gin.Context) {
 	contractAnswer, err := contractWrapper.RequestBalancesForUsersOnContract(reqData.Users, reqData.Tokens)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	} else {
+		serverAnswer.Balances = contractAnswer
+		c.JSON(http.StatusOK, serverAnswer)
+		return
 	}
-	serverAnswer.Balances = contractAnswer
-	c.JSON(http.StatusOK, serverAnswer)
 }
