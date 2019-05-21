@@ -6,10 +6,11 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"log"
+	"os"
 )
 
 func CreateEthereumClient() *ethclient.Client {
-	client, err := ethclient.Dial("")
+	client, err := ethclient.Dial(singleton.EthEndpoint)
 	if err != nil {
 		log.Println(err)
 	}
@@ -30,6 +31,8 @@ func RunGinServer(ginServer *gin.Engine) {
 
 func init() {
 	// check for ping
+	singleton.EthEndpoint = os.Getenv("ETH_ENDPOINT")
+	singleton.ContractAddress = os.Getenv("ADDRESS")
 	singleton.Client = CreateEthereumClient()
 	singleton.GinServer = CreateGinServer()
 }

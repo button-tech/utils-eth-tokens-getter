@@ -5,6 +5,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var ContractAddress string
-var Client *ethclient.Client
-var GinServer *gin.Engine
+var (
+	// add network type and port
+	ContractAddress string
+	EthEndpoint     string
+	Client          *ethclient.Client
+	GinServer       *gin.Engine
+)
