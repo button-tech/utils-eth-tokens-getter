@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/EnoRage/ethbal/contract"
+	"github.com/EnoRage/ethbal/contractWrapper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func LookForTokens(c *gin.Context) {
 	var serverAnswer UsersAndTokenAndBalances
 	c.BindJSON(&reqData)
 	serverAnswer.UsersAndToken = reqData
-	contractAnswer, err := contract.RequestBalancesForUsersOnContract(reqData.Users, reqData.Tokens)
+	contractAnswer, err := contractWrapper.RequestBalancesForUsersOnContract(reqData.Users, reqData.Tokens)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
