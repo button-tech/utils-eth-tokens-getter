@@ -26,7 +26,8 @@ func RunGinServer(ginServer *gin.Engine) {
 	ginServer.Use(gin.Recovery())
 	ginServer.Use(gin.Logger())
 	ginServer.POST("/balances", server.LookForTokens)
-	err := ginServer.Run(":8090")
+	gin.SetMode(gin.ReleaseMode)
+	err := ginServer.Run(singleton.GinPort)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -36,6 +37,7 @@ func init() {
 	// check for ping
 	singleton.EthEndpoint = os.Getenv("ETH_ENDPOINT")
 	singleton.ContractAddress = os.Getenv("ADDRESS")
+	singleton.GinPort = os.Getenv("GIN_PORT")
 	singleton.Client = CreateEthereumClient()
 	singleton.GinServer = CreateGinServer()
 }

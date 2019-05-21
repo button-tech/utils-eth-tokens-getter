@@ -6,9 +6,9 @@ import (
 )
 
 var (
-	// add port
 	ContractAddress string
 	EthEndpoint     string
 	Client          *ethclient.Client
 	GinServer       *gin.Engine
+	GinPort         string
 )

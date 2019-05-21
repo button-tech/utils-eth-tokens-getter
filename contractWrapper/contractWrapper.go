@@ -16,8 +16,10 @@ func RequestBalancesForUsersOnContract(users []string, tokens []string) ([]strin
 	response, err := instance.GetTokenBalance(&bind.CallOpts{}, FromStringToCommonAddress(users), FromStringToCommonAddress(tokens))
 	if err != nil {
 		return nil, err
+	} else {
+		return FromBigIntToString(response), nil
 	}
-	return FromBigIntToString(response), nil
+
 }
 
 func FromStringToCommonAddress(args []string) []common.Address {
