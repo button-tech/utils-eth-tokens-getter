@@ -26,7 +26,10 @@ func RunGinServer(ginServer *gin.Engine) {
 	ginServer.Use(gin.Recovery())
 	ginServer.Use(gin.Logger())
 	ginServer.POST("/balances", server.LookForTokens)
-	ginServer.Run(":80")
+	err := ginServer.Run(":80")
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }
 
 func init() {

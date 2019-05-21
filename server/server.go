@@ -19,7 +19,11 @@ type UsersAndTokenAndBalances struct {
 func LookForTokens(c *gin.Context) {
 	var reqData UsersAndToken
 	var serverAnswer UsersAndTokenAndBalances
-	c.BindJSON(&reqData)
+	err := c.BindJSON(&reqData)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	serverAnswer.UsersAndToken = reqData
 	contractAnswer, err := contractWrapper.RequestBalancesForUsersOnContract(reqData.Users, reqData.Tokens)
 	if err != nil {
