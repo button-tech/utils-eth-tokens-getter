@@ -11,27 +11,38 @@ type UsersAndToken struct {
 	Tokens []string `json:"tokens"`
 }
 
-type UsersAndTokenAndBalances struct {
-	UsersAndToken
-	Balances []string `json:"balances"`
+type Respond struct {
+	UsersBalances []UserBalance `json:"users_balances"`
+}
+
+type UserBalance struct {
+	User              string `json:"user"`
+	TokenBalanceGroup []TokenAndBalance
+}
+
+type TokenAndBalance struct {
+	TokenAddress string `json:"token_address"`
+	Balance      string `json:"balance"`
 }
 
 func LookForTokens(c *gin.Context) {
 	var reqData UsersAndToken
-	var serverAnswer UsersAndTokenAndBalances
+	var respond Respond
 	err := c.BindJSON(&reqData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	serverAnswer.UsersAndToken = reqData
+
 	contractAnswer, err := contractWrapper.RequestBalancesForUsersOnContract(reqData.Users, reqData.Tokens)
+
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	} else {
-		serverAnswer.Balances = contractAnswer
-		c.JSON(http.StatusOK, serverAnswer)
+		// сюда все присвоить
+		c.JSON(http.StatusOK, respond)
 		return
 	}
 }

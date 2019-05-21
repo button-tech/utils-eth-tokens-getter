@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	// add network type and port
+	// add port
 	ContractAddress string
 	EthEndpoint     string
 	Client          *ethclient.Client
