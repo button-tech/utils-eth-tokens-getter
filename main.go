@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/EnoRage/ethbal/server"
 	"github.com/EnoRage/ethbal/singleton"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -27,7 +28,7 @@ func RunGinServer(ginServer *gin.Engine) {
 	ginServer.Use(gin.Logger())
 	ginServer.POST("/balances", server.LookForTokens)
 	gin.SetMode(gin.ReleaseMode)
-	err := ginServer.Run(singleton.GinPort)
+	err := ginServer.Run(":" + singleton.GinPort)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -40,6 +41,10 @@ func init() {
 	singleton.GinPort = os.Getenv("GIN_PORT")
 	singleton.Client = CreateEthereumClient()
 	singleton.GinServer = CreateGinServer()
+
+	fmt.Println(os.Getenv("ETH_ENDPOINT"))
+	fmt.Println(os.Getenv("ADDRESS"))
+	fmt.Println(os.Getenv("GIN_PORT"))
 }
 
 func main() {
