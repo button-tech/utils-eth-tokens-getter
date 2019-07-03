@@ -1,7 +1,8 @@
 const addresses = require("./addresses.json");
+const test = require("./test.json");
 
 const Balance = artifacts.require("Balance");
-const balanceContractAddress = '0x74Cb34D5a97c808b02a5F56631a21c822CEa1204';
+const balanceContractAddress = '0x39aA7b93bbF1b5895a7d5A41Aa70B664aF8BC29f';
 const contractAddresses = [
     '0xd26114cd6EE289AccF82350c8d8487fedB8A0C07',
     '0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2',
@@ -23,12 +24,21 @@ module.exports = async function() {
             t.stop();
         }
 
+        async function getTokenBalancesByAddress(tokenAddresses, address) {
+            console.log(`We have ${tokenAddresses.length} token addresses`);
+            const t = timer("getBalances");
+            await balance.getTokenBalanceByAddress(address, tokenAddresses);
+            t.stop();
+        }
+
         async function getTokenBalances(tokenAddress, addresses) {
             console.log(`We have ${addresses.length} addresses for ${tokenAddress}`);
             const t = timer("getTokenBalances");
             await balance.getTokenBalance(addresses, tokenAddress);
             t.stop();
         }
+
+        await getTokenBalancesByAddress(test.tokens, test.user);
 
         for (let i in addresses) {
             await getBalances(i, addresses[i]);
@@ -37,6 +47,8 @@ module.exports = async function() {
                 process.exit(1);
             }
         }
+
+
     } catch (e) {
         console.log(e)
     }
