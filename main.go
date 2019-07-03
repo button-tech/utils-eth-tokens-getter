@@ -25,7 +25,6 @@ func CreateGinServer() *gin.Engine {
 
 func RunGinServer(ginServer *gin.Engine) {
 	ginServer.Use(gin.Recovery())
-	ginServer.Use(gin.Logger())
 	ginServer.POST("/balances", server.LookForTokens)
 	gin.SetMode(gin.ReleaseMode)
 	err := ginServer.Run(":" + singleton.GinPort)
