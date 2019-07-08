@@ -9,7 +9,7 @@ import (
 	"log"
 	"os"
 )
-
+//init
 func CreateEthereumClient() *ethclient.Client {
 	client, err := ethclient.Dial(singleton.EthEndpoint)
 	if err != nil {
