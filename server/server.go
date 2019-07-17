@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/EnoRage/ethbal/contractWrapper"
+	"github.com/button-tech/utils-eth-tokens-getter/contractWrapper"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -54,11 +54,5 @@ func LookForTokens(c *gin.Context) {
 		userBalances = append(userBalances, userBalance)
 	}
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	} else {
-		c.JSON(http.StatusOK, userBalances)
-		return
-	}
+	c.JSON(http.StatusOK, userBalances)
 }

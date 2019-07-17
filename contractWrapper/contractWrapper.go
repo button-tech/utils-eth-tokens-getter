@@ -1,8 +1,8 @@
 package contractWrapper
 
 import (
-	"github.com/EnoRage/ethbal/contract"
-	"github.com/EnoRage/ethbal/singleton"
+	"github.com/button-tech/utils-eth-tokens-getter/contract"
+	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"

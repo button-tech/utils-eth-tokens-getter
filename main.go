@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/EnoRage/ethbal/server"
-	"github.com/EnoRage/ethbal/singleton"
+	"github.com/button-tech/utils-eth-tokens-getter/server"
+	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"log"
