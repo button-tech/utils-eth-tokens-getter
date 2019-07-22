@@ -10,8 +10,8 @@ type Tokens struct {
 	Address string
 }
 
-func GetTokenList() ([]Tokens, error) {
-	f, err := os.Open("tokenList.csv")
+func GetTokenList(file string) ([]Tokens, error) {
+	f, err := os.Open(file)
 	if err != nil {
 		return nil, err
 	}

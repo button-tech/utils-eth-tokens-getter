@@ -34,7 +34,7 @@ func init() {
 
 	go estorage.StartStoring()
 
-	tokens, err := token_list.GetTokenList()
+	tokens, err := token_list.GetTokenList("./token-list/tokenList.csv")
 	if err != nil{
 		log.Println(err)
 		os.Exit(1)
