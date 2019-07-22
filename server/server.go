@@ -2,20 +2,21 @@ package server
 
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
+	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
-	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 )
-
 
 type UserBalance struct {
 	TokenBalanceGroup []TokenAndBalance `json:"token_balance_group"`
 }
 
 type TokenAndBalance struct {
-	TokenAddress string `json:"token_address"`
-	Balance      string `json:"balance"`
+	//TokenAddress string `json:"token_address"`
+	Symbol  string
+	Balance string `json:"balance"`
 }
 
 func LookForTokens(c *gin.Context) {
@@ -23,9 +24,11 @@ func LookForTokens(c *gin.Context) {
 	userAddress := c.Param("address")
 
 	var tokenAddresses []string
+	var tokenSymbols []string
 
-	for _, j := range singleton.TokenList{
+	for _, j := range singleton.TokenList {
 		tokenAddresses = append(tokenAddresses, j.Address)
+		tokenSymbols = append(tokenSymbols, j.Symbol)
 	}
 
 	contractAnswer, err := contract_wrapper.RequestBalancesForUsersOnContract(common.HexToAddress(userAddress), tokenAddresses)
@@ -34,24 +37,15 @@ func LookForTokens(c *gin.Context) {
 		return
 	}
 
-	amountOfTokens := len(tokenAddresses)
+	log.Println(contractAnswer)
 
-	var userBalances = make([]UserBalance, 0)
-	for i := 0; i < amountOfTokens; i++ {
-		var userBalance UserBalance
-		var tokenBalanceGroup = make([]TokenAndBalance, 0)
-		var lhs = amountOfTokens * i
-		var rhs = lhs + amountOfTokens
-		for j := lhs; j < rhs; j++ {
-			var tokenBalance TokenAndBalance
-			tokenBalance.Balance = contractAnswer[j]
-			tokenBalance.TokenAddress = tokenAddresses[j-lhs]
-			tokenBalanceGroup = append(tokenBalanceGroup, tokenBalance)
+	var balance UserBalance
+
+	for i := 0; i < len(contractAnswer); i++ {
+		if contractAnswer[i] != "0" {
+			balance.TokenBalanceGroup = append(balance.TokenBalanceGroup, TokenAndBalance{Balance: contractAnswer[i], Symbol: tokenSymbols[i]})
 		}
-
-		userBalance.TokenBalanceGroup = tokenBalanceGroup
-		userBalances = append(userBalances, userBalance)
 	}
 
-	c.JSON(http.StatusOK, userBalances)
+	c.JSON(http.StatusOK, balance)
 }
