@@ -1,56 +1,83 @@
 package server
 
 import (
-	"errors"
 	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
-	"github.com/button-tech/utils-eth-tokens-getter/estorage"
 	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"github.com/button-tech/utils-eth-tokens-getter/estorage"
 	"time"
+	"errors"
+	"strconv"
+	"math"
 )
 
-type UserBalance struct {
-	TokenBalanceGroup []TokenAndBalance `json:"token_balance_group"`
+type UserTokenBalances struct {
+	Data []TokenInfo `json:"data"`
 }
 
-type TokenAndBalance struct {
-	//TokenAddress string `json:"token_address"`
-	Symbol  string
-	Balance string `json:"balance"`
+type TokenInfo struct {
+	Currency  string  `json:"currency"`
+	Amount string `json:"amount"`
+	Token string `json:"token"`
 }
 
 func LookForTokens(c *gin.Context) {
 
 	var (
 		tokenAddresses []string
-		tokenSymbols   []string
-		balance        UserBalance
-		userAddress    = c.Param("address")
-		result         = make(chan []string)
+	    tokenSymbols []string
+		tokenDec []string
+		balance UserTokenBalances
+		userAddress = c.Param("address")
+		result = make(chan []string)
 	)
 
 	for _, j := range singleton.TokenList {
 		tokenAddresses = append(tokenAddresses, j.Address)
 		tokenSymbols = append(tokenSymbols, j.Symbol)
+		tokenDec = append(tokenDec, j.Dec)
 	}
 
 	endpoints, err := estorage.GetEthEndpoints()
-	if err != nil {
+	if err != nil{
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	for _, e := range endpoints {
+	for _, e := range endpoints{
 		go contract_wrapper.RequestTokenBalance(common.HexToAddress(userAddress), e, tokenAddresses, result)
 	}
 
 	select {
-	case contractAnswer := <-result:
+	case contractAnswer := <- result:
 		for i := 0; i < len(contractAnswer); i++ {
 			if contractAnswer[i] != "0" {
-				balance.TokenBalanceGroup = append(balance.TokenBalanceGroup, TokenAndBalance{Balance: contractAnswer[i], Symbol: tokenSymbols[i]})
+
+				balanceFloat, err := strconv.ParseFloat(contractAnswer[i], 64 )
+				if err != nil{
+					c.JSON(http.StatusInternalServerError, err)
+					return
+				}
+
+				decFloat, err := strconv.ParseFloat(tokenDec[i], 64)
+				if err != nil{
+					c.JSON(http.StatusInternalServerError, err)
+					return
+				}
+
+				decInt, err := strconv.Atoi(tokenDec[i])
+				if err != nil{
+					c.JSON(http.StatusInternalServerError, err)
+					return
+				}
+
+				resultFloat := balanceFloat / math.Pow(10, decFloat)
+
+				resultStr := strconv.FormatFloat(resultFloat, 'f', decInt , 64)
+
+				balance.Data = append(balance.Data, TokenInfo{Amount: resultStr, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
 			}
 		}
 		c.JSON(http.StatusOK, balance)
