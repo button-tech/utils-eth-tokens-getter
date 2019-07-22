@@ -10,7 +10,7 @@ import (
 	"math/big"
 )
 
-func RequestBalancesForUsersOnContract(users []string, tokens []string) ([]string, error) {
+func RequestBalancesForUsersOnContract(user common.Address, tokens []string) ([]string, error) {
 	endpoint, err := estorage.GetEthEndpoint()
 	if err != nil {
 		return nil, err
@@ -21,11 +21,11 @@ func RequestBalancesForUsersOnContract(users []string, tokens []string) ([]strin
 		return nil, err
 	}
 
-	instance, err := balanceContract.NewBalanceContract(common.HexToAddress(singleton.ContractAddress), client)
+	instance, err := contract.NewContract(common.HexToAddress(singleton.ContractAddress), client)
 	if err != nil {
 		return nil, err
 	}
-	response, err := instance.GetTokenBalance(&bind.CallOpts{}, FromStringToCommonAddress(users), FromStringToCommonAddress(tokens))
+	response, err := instance.GetTokenBalanceByAddress(&bind.CallOpts{}, user, FromStringToCommonAddress(tokens))
 	if err != nil {
 		return nil, err
 	} else {
