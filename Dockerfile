@@ -9,6 +9,7 @@ FROM debian:latest
 
 RUN mkdir /app
 COPY --from=builder /bin /app
+COPY --from=builder /build/token-list /app/token-list
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 WORKDIR /app
 EXPOSE 8080

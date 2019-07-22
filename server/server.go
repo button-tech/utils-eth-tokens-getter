@@ -66,16 +66,10 @@ func LookForTokens(c *gin.Context) {
 					c.JSON(http.StatusInternalServerError, err)
 					return
 				}
-
-				decInt, err := strconv.Atoi(tokenDec[i])
-				if err != nil{
-					c.JSON(http.StatusInternalServerError, err)
-					return
-				}
-
+				
 				resultFloat := balanceFloat / math.Pow(10, decFloat)
 
-				resultStr := strconv.FormatFloat(resultFloat, 'f', decInt , 64)
+				resultStr := strconv.FormatFloat(resultFloat, 'f', 8 , 64)
 
 				balance.Data = append(balance.Data, TokenInfo{Amount: resultStr, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
 			}
