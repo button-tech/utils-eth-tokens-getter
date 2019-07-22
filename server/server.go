@@ -1,16 +1,13 @@
 package server
 
 import (
-	"github.com/button-tech/utils-eth-tokens-getter/contractWrapper"
+	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 )
 
-type UsersAndToken struct {
-	UserAddress string   `json:"users"`
-	Tokens      []string `json:"tokens"`
-}
 
 type UserBalance struct {
 	TokenBalanceGroup []TokenAndBalance `json:"token_balance_group"`
@@ -23,20 +20,21 @@ type TokenAndBalance struct {
 
 func LookForTokens(c *gin.Context) {
 
-	var reqData UsersAndToken
+	userAddress := c.Param("address")
 
-	err := c.BindJSON(&reqData)
+	var tokenAddresses []string
+
+	for _, j := range singleton.TokenList{
+		tokenAddresses = append(tokenAddresses, j.Address)
+	}
+
+	contractAnswer, err := contract_wrapper.RequestBalancesForUsersOnContract(common.HexToAddress(userAddress), tokenAddresses)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	contractAnswer, err := contractWrapper.RequestBalancesForUsersOnContract(common.HexToAddress(reqData.UserAddress), reqData.Tokens)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	amountOfTokens := len(reqData.Tokens)
+	amountOfTokens := len(tokenAddresses)
 
 	var userBalances = make([]UserBalance, 0)
 	for i := 0; i < amountOfTokens; i++ {
@@ -47,7 +45,7 @@ func LookForTokens(c *gin.Context) {
 		for j := lhs; j < rhs; j++ {
 			var tokenBalance TokenAndBalance
 			tokenBalance.Balance = contractAnswer[j]
-			tokenBalance.TokenAddress = reqData.Tokens[j-lhs]
+			tokenBalance.TokenAddress = tokenAddresses[j-lhs]
 			tokenBalanceGroup = append(tokenBalanceGroup, tokenBalance)
 		}
 

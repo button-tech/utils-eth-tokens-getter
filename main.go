@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
+	"github.com/button-tech/utils-eth-tokens-getter/token-list"
 )
 
 func CreateGinServer() *gin.Engine {
@@ -15,25 +16,37 @@ func CreateGinServer() *gin.Engine {
 }
 
 func RunGinServer(ginServer *gin.Engine) {
+
 	ginServer.Use(gin.Recovery())
-	ginServer.POST("/balances", server.LookForTokens)
+
+	ginServer.GET("/tokenBalance/:address", server.LookForTokens)
+
 	gin.SetMode(gin.ReleaseMode)
+
 	err := ginServer.Run(":" + singleton.GinPort)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println(err)
+		os.Exit(1)
 	}
 }
 
 func init() {
 
-	// start storing
 	go estorage.StartStoring()
 
-	// check for ping
+	tokens, err := token_list.GetTokenList()
+	if err != nil{
+		log.Println(err)
+		os.Exit(1)
+	}
+
 	singleton.ContractAddress = os.Getenv("ADDRESS")
 	singleton.GinPort = os.Getenv("GIN_PORT")
+	singleton.TokenList = tokens
+
 	log.Println(os.Getenv("ADDRESS"))
 	log.Println(os.Getenv("GIN_PORT"))
+
 	singleton.GinServer = CreateGinServer()
 }
 

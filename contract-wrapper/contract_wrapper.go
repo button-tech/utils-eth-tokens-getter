@@ -1,4 +1,4 @@
-package contractWrapper
+package contract_wrapper
 
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract"
