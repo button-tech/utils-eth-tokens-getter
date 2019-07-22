@@ -1,17 +1,19 @@
 package main
 
 import (
-	"fmt"
 	"github.com/button-tech/utils-eth-tokens-getter/server"
 	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
+	"github.com/button-tech/utils-eth-tokens-getter/estorage"
+	"github.com/button-tech/utils-eth-tokens-getter/estorage/db"
 )
+
 //init
-func CreateEthereumClient() *ethclient.Client {
-	client, err := ethclient.Dial(singleton.EthEndpoint)
+func CreateEthereumClient(endpoint string) *ethclient.Client {
+	client, err := ethclient.Dial(endpoint)
 	if err != nil {
 		log.Println(err)
 	}
@@ -34,16 +36,32 @@ func RunGinServer(ginServer *gin.Engine) {
 }
 
 func init() {
+	// for first store
+	ethEndpoints, err := db.GetEthEntries()
+	if err != nil{
+		log.Println(err)
+		os.Exit(1)
+	}
+
+	estorage.EthEndpointsFromStorage.Add(*ethEndpoints)
+
+	// start storing
+	go estorage.StartStoring()
+
+
 	// check for ping
-	singleton.EthEndpoint = os.Getenv("ETH_ENDPOINT")
 	singleton.ContractAddress = os.Getenv("ADDRESS")
 	singleton.GinPort = os.Getenv("GIN_PORT")
-	singleton.Client = CreateEthereumClient()
-	singleton.GinServer = CreateGinServer()
+	log.Println(os.Getenv("ADDRESS"))
+	log.Println(os.Getenv("GIN_PORT"))
 
-	fmt.Println(os.Getenv("ETH_ENDPOINT"))
-	fmt.Println(os.Getenv("ADDRESS"))
-	fmt.Println(os.Getenv("GIN_PORT"))
+	endpoint, err := estorage.GetEthEndpoint()
+	if err != nil{
+		os.Exit(1)
+	}
+
+	singleton.Client = CreateEthereumClient(endpoint)
+	singleton.GinServer = CreateGinServer()
 }
 
 func main() {

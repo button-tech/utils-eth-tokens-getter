@@ -5,9 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+
 var (
+	EthEndpoints    []string
 	ContractAddress string
-	EthEndpoint     string
 	Client          *ethclient.Client
 	GinServer       *gin.Engine
 	GinPort         string
