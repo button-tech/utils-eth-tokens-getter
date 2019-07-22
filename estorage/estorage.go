@@ -2,20 +2,18 @@ package estorage
 
 import (
 	"sync"
-	"github.com/button-tech/utils-eth-tokens-getter/estorage/db/schema"
+	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
 	"math/rand"
 	"errors"
 	"time"
 	"log"
-	"github.com/button-tech/utils-eth-tokens-getter/estorage/db"
+	"github.com/button-tech/utils-eth-tokens-getter/db"
 )
 
 type StoredEthEndpoints struct {
 	sync.RWMutex
 	EthEndpoints schema.EthEntry
 }
-
-var EthEndpointsFromStorage StoredEthEndpoints
 
 func (s *StoredEthEndpoints) Add(entry schema.EthEntry) {
 	s.Lock()
@@ -28,6 +26,8 @@ func(s *StoredEthEndpoints) Get() *schema.EthEntry{
 	defer s.RUnlock()
 	return &s.EthEndpoints
 }
+
+var EthEndpointsFromStorage StoredEthEndpoints
 
 func StartStoring(){
 
@@ -42,10 +42,8 @@ func StartStoring(){
 
 		EthEndpointsFromStorage.Add(*entry)
 
-
 		time.Sleep(time.Minute * 10)
 	}
-
 }
 
 func GetEthEndpoint() (string, error){

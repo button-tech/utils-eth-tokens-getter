@@ -6,10 +6,22 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+	"github.com/button-tech/utils-eth-tokens-getter/estorage"
+	"github.com/ethereum/go-ethereum/ethclient"
 )
 
 func RequestBalancesForUsersOnContract(users []string, tokens []string) ([]string, error) {
-	instance, err := balanceContract.NewBalanceContract(common.HexToAddress(singleton.ContractAddress), singleton.Client)
+	endpoint, err := estorage.GetEthEndpoint()
+	if err != nil{
+		return nil, err
+	}
+
+	client, err := ethclient.Dial(endpoint)
+	if err != nil{
+		return nil, err
+	}
+
+	instance, err := balanceContract.NewBalanceContract(common.HexToAddress(singleton.ContractAddress), client)
 	if err != nil {
 		return nil, err
 	}
