@@ -5,7 +5,6 @@ import (
 	"github.com/button-tech/utils-eth-tokens-getter/db"
 	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
 	"log"
-	"math/rand"
 	"sync"
 	"time"
 )
@@ -46,17 +45,11 @@ func StartStoring() {
 	}
 }
 
-func GetEthEndpoint() (string, error) {
+func GetEthEndpoints() ([]string, error) {
 	endpoints := EthEndpointsFromStorage.Get()
 	if endpoints == nil {
-		return "", errors.New("Not found")
+		return nil, errors.New("Not found")
 	}
 
-	addresses := endpoints.Addresses
-
-	rand.Seed(time.Now().UnixNano())
-
-	result := addresses[rand.Intn(len(addresses))]
-
-	return result, nil
+	return endpoints.Addresses, nil
 }

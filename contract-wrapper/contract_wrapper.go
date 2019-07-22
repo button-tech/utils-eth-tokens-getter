@@ -2,7 +2,6 @@ package contract_wrapper
 
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract"
-	"github.com/button-tech/utils-eth-tokens-getter/estorage"
 	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -10,28 +9,22 @@ import (
 	"math/big"
 )
 
-func RequestBalancesForUsersOnContract(user common.Address, tokens []string) ([]string, error) {
-	endpoint, err := estorage.GetEthEndpoint()
-	if err != nil {
-		return nil, err
-	}
-
+func RequestTokenBalance(user common.Address, endpoint string, tokens []string, result chan []string) {
 	client, err := ethclient.Dial(endpoint)
 	if err != nil {
-		return nil, err
+		return
 	}
 
 	instance, err := contract.NewContract(common.HexToAddress(singleton.ContractAddress), client)
 	if err != nil {
-		return nil, err
+		return
 	}
 	response, err := instance.GetTokenBalanceByAddress(&bind.CallOpts{}, user, FromStringToCommonAddress(tokens))
 	if err != nil {
-		return nil, err
+		return
 	} else {
-		return FromBigIntToString(response), nil
+		result <- FromBigIntToString(response)
 	}
-
 }
 
 func FromStringToCommonAddress(args []string) []common.Address {
