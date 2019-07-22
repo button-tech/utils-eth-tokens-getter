@@ -1,13 +1,13 @@
 package estorage
 
 import (
-	"sync"
-	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
-	"math/rand"
 	"errors"
-	"time"
-	"log"
 	"github.com/button-tech/utils-eth-tokens-getter/db"
+	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
+	"log"
+	"math/rand"
+	"sync"
+	"time"
 )
 
 type StoredEthEndpoints struct {
@@ -21,7 +21,7 @@ func (s *StoredEthEndpoints) Add(entry schema.EthEntry) {
 	s.Unlock()
 }
 
-func(s *StoredEthEndpoints) Get() *schema.EthEntry{
+func (s *StoredEthEndpoints) Get() *schema.EthEntry {
 	s.RLock()
 	defer s.RUnlock()
 	return &s.EthEndpoints
@@ -29,7 +29,7 @@ func(s *StoredEthEndpoints) Get() *schema.EthEntry{
 
 var EthEndpointsFromStorage StoredEthEndpoints
 
-func StartStoring(){
+func StartStoring() {
 
 	log.Println("Start storing!")
 
@@ -46,7 +46,7 @@ func StartStoring(){
 	}
 }
 
-func GetEthEndpoint() (string, error){
+func GetEthEndpoint() (string, error) {
 	endpoints := EthEndpointsFromStorage.Get()
 	if endpoints == nil {
 		return "", errors.New("Not found")

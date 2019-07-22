@@ -1,10 +1,10 @@
 package db
 
 import (
-	"os"
-	"gopkg.in/mgo.v2"
 	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"os"
 )
 
 var (

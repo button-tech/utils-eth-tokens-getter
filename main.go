@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/button-tech/utils-eth-tokens-getter/estorage"
 	"github.com/button-tech/utils-eth-tokens-getter/server"
 	"github.com/button-tech/utils-eth-tokens-getter/singleton"
 	"github.com/gin-gonic/gin"
 	"log"
 	"os"
-	"github.com/button-tech/utils-eth-tokens-getter/estorage"
 )
 
 func CreateGinServer() *gin.Engine {

@@ -5,7 +5,6 @@ import (
 )
 
 var (
-
 	ContractAddress string
 	GinServer       *gin.Engine
 	GinPort         string
