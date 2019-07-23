@@ -1,4 +1,4 @@
-package estorage
+package endpoints
 
 import (
 	"errors"

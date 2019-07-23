@@ -2,7 +2,7 @@ package contract_wrapper
 
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract"
-	"github.com/button-tech/utils-eth-tokens-getter/shared"
+	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/ethclient"
@@ -16,7 +16,7 @@ func RequestTokenBalance(user common.Address, endpoint string, tokens []string, 
 		return
 	}
 
-	instance, err := contract.NewContract(common.HexToAddress(shared.ContractAddress), client)
+	instance, err := contract.NewContract(common.HexToAddress(storage.ContractAddress), client)
 	if err != nil {
 		errChan <- err
 		return
