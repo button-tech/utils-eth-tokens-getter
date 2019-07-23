@@ -17,9 +17,9 @@ type UserTokenBalances struct {
 }
 
 type TokenInfo struct {
-	Currency string  `json:"currency"`
-	Amount   float64 `json:"amount"`
 	Token    string  `json:"token"`
+	Amount   float64 `json:"amount"`
+	Currency string  `json:"currency"`
 }
 
 func LookForTokens(c *gin.Context) {
