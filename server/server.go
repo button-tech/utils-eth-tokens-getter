@@ -17,9 +17,9 @@ type UserTokenBalances struct {
 }
 
 type TokenInfo struct {
-	Currency string `json:"currency"`
-	Amount   string `json:"amount"`
-	Token    string `json:"token"`
+	Currency string  `json:"currency"`
+	Amount   float64 `json:"amount"`
+	Token    string  `json:"token"`
 }
 
 func LookForTokens(c *gin.Context) {
@@ -69,9 +69,7 @@ func LookForTokens(c *gin.Context) {
 
 				resultFloat := balanceFloat / math.Pow(10, decFloat)
 
-				resultStr := strconv.FormatFloat(resultFloat, 'f', 8, 64)
-
-				balance.Data = append(balance.Data, TokenInfo{Amount: resultStr, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
+				balance.Data = append(balance.Data, TokenInfo{Amount: resultFloat, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
 			}
 		}
 
