@@ -3,7 +3,7 @@ FROM golang:latest AS builder
 RUN mkdir /build
 ADD . /build
 WORKDIR /build
-RUN go build  -tags=jsoniter -a -o /bin/main .
+RUN go build -o /bin/main ./server
 
 FROM debian:latest
 
