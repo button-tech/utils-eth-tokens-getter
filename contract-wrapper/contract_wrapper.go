@@ -9,18 +9,21 @@ import (
 	"math/big"
 )
 
-func RequestTokenBalance(user common.Address, endpoint string, tokens []string, result chan []string) {
+func RequestTokenBalance(user common.Address, endpoint string, tokens []string, result chan []string, errChan chan error) {
 	client, err := ethclient.Dial(endpoint)
 	if err != nil {
+		errChan <- err
 		return
 	}
 
 	instance, err := contract.NewContract(common.HexToAddress(singleton.ContractAddress), client)
 	if err != nil {
+		errChan <- err
 		return
 	}
 	response, err := instance.GetTokenBalanceByAddress(&bind.CallOpts{}, user, FromStringToCommonAddress(tokens))
 	if err != nil {
+		errChan <- err
 		return
 	} else {
 		result <- FromBigIntToString(response)
