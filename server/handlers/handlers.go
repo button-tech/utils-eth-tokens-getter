@@ -1,13 +1,14 @@
-package server
+package handlers
 
 import (
+	"encoding/json"
+	"errors"
 	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/estorage"
-	"github.com/button-tech/utils-eth-tokens-getter/singleton"
+	"github.com/button-tech/utils-eth-tokens-getter/shared"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/gin-gonic/gin"
+	"github.com/qiangxue/fasthttp-routing"
 	"math"
-	"net/http"
 	"strconv"
 	"time"
 )
@@ -22,7 +23,7 @@ type TokenInfo struct {
 	Currency string  `json:"currency"`
 }
 
-func LookForTokens(c *gin.Context) {
+func LookForTokens(c *routing.Context) error {
 
 	var (
 		tokenAddresses []string
@@ -34,7 +35,7 @@ func LookForTokens(c *gin.Context) {
 		errChan        = make(chan error)
 	)
 
-	for _, j := range singleton.TokenList {
+	for _, j := range shared.TokenList {
 		tokenAddresses = append(tokenAddresses, j.Address)
 		tokenSymbols = append(tokenSymbols, j.Symbol)
 		tokenDec = append(tokenDec, j.Dec)
@@ -42,8 +43,7 @@ func LookForTokens(c *gin.Context) {
 
 	endpoints, err := estorage.GetEthEndpoints()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 
 	for _, e := range endpoints {
@@ -57,14 +57,12 @@ func LookForTokens(c *gin.Context) {
 
 				balanceFloat, err := strconv.ParseFloat(contractAnswer[i], 64)
 				if err != nil {
-					c.JSON(http.StatusInternalServerError, err)
-					return
+					return err
 				}
 
 				decFloat, err := strconv.ParseFloat(tokenDec[i], 64)
 				if err != nil {
-					c.JSON(http.StatusInternalServerError, err)
-					return
+					return err
 				}
 
 				resultFloat := balanceFloat / math.Pow(10, decFloat)
@@ -77,10 +75,28 @@ func LookForTokens(c *gin.Context) {
 			balance.Data = []TokenInfo{}
 		}
 
-		c.JSON(http.StatusOK, balance)
+		err := JsonResponse(c, balance)
+		if err != nil {
+			return err
+		}
+
 	case err := <-errChan:
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
 	case <-time.After(2 * time.Second):
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Bad request or timeout"})
+		return errors.New("Bad request or timeout")
 	}
+
+	return nil
+}
+
+func JsonResponse(ctx *routing.Context, data interface{}) error {
+	ctx.Response.Header.Set("Access-Control-Allow-Origin", "https://client.buttonwallet.tech")
+	ctx.Response.Header.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE, HEAD")
+	ctx.Response.Header.Set("Access-Control-Allow-Credentials", "true")
+	ctx.Response.Header.SetCanonical([]byte("Content-Type"), []byte("application/json"))
+	ctx.Response.SetStatusCode(200)
+	if err := json.NewEncoder(ctx).Encode(data); err != nil {
+		return err
+	}
+	return nil
 }
