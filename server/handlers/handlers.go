@@ -41,12 +41,12 @@ func LookForTokens(c *routing.Context) error {
 		tokenDec = append(tokenDec, j.Dec)
 	}
 
-	endpoints, err := endpoints.GetEthEndpoints()
+	es, err := endpoints.GetEthEndpoints()
 	if err != nil {
 		return err
 	}
 
-	for _, e := range endpoints {
+	for _, e := range es {
 		go contract_wrapper.RequestTokenBalance(common.HexToAddress(userAddress), e, tokenAddresses, result, errChan)
 	}
 
