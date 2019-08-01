@@ -22,15 +22,15 @@
 		"constant": true,
 		"inputs": [
 			{
-				"name": "_addresses",
-				"type": "address[]"
+				"name": "_address",
+				"type": "address"
 			},
 			{
 				"name": "_tokenAddresses",
 				"type": "address[]"
 			}
 		],
-		"name": "getTokenBalance",
+		"name": "getTokensBalancesByAddress",
 		"outputs": [
 			{
 				"name": "balances",
@@ -49,15 +49,15 @@
 				"type": "address"
 			},
 			{
-				"name": "_tokenAddresses",
-				"type": "address[]"
+				"name": "_tokenAddress",
+				"type": "address"
 			}
 		],
-		"name": "getTokenBalanceByAddress",
+		"name": "getTokenBalance",
 		"outputs": [
 			{
 				"name": "balances",
-				"type": "uint256[]"
+				"type": "uint256"
 			}
 		],
 		"payable": false,

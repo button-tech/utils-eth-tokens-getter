@@ -21,7 +21,7 @@ func RequestTokenBalance(user common.Address, endpoint string, tokens []string, 
 		errChan <- err
 		return
 	}
-	response, err := instance.GetTokenBalanceByAddress(&bind.CallOpts{}, user, FromStringToCommonAddress(tokens))
+	response, err := instance.GetTokensBalancesByAddress(&bind.CallOpts{}, user, FromStringToCommonAddress(tokens))
 	if err != nil {
 		errChan <- err
 		return

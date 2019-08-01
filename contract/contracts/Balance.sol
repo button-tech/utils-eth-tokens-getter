@@ -1,4 +1,4 @@
-pragma solidity ^0.5.1;
+pragma solidity ^0.5.10;
 
 contract IERC20 {
        function totalSupply() public view returns (uint);
@@ -19,22 +19,14 @@ contract IBalance {
 
 contract Balance {
 
-   function getTokenBalance(address[] memory _addresses, address[] memory _tokenAddresses) public view returns (uint256[] memory balances) {
-       require(_tokenAddresses.length >= 1);
-       require(_addresses.length >= 1);
-       uint256 counter = 0;
-       balances = new uint[](_addresses.length * _tokenAddresses.length);
-       for (uint i = 0; i < _tokenAddresses.length; i++) {
-           for (uint j = 0; j < _addresses.length; j++) {
-                IERC20 token = IERC20(_tokenAddresses[i]);
-                balances[counter] = uint256(token.balanceOf(_addresses[j]));
-                counter++;
-           }
-       }
-       return balances;
+   function getTokenBalance(address _address, address _tokenAddress) public view returns (uint256  balances) {
+       uint256 balance;
+       IERC20 token = IERC20(_tokenAddress);
+       balance = uint256(token.balanceOf(_address));
+       return balance;
    }
 
-  function getTokenBalanceByAddress(address _address, address[] memory _tokenAddresses) public view returns (uint256[] memory balances) {
+  function getTokensBalancesByAddress(address _address, address[] memory _tokenAddresses) public view returns (uint256[] memory balances) {
       require(_tokenAddresses.length >= 1);
       balances = new uint[](_tokenAddresses.length);
       for (uint i = 0; i < _tokenAddresses.length; i++) {

@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
+	"github.com/button-tech/utils-eth-tokens-getter/contract_wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/qiangxue/fasthttp-routing"

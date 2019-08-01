@@ -32,7 +32,6 @@ func StartTokenListStoring() {
 	for {
 		entries, err := db.GetTokensEntries()
 		if err != nil {
-
 			continue
 		}
 
