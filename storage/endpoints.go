@@ -1,4 +1,4 @@
-package endpoints
+package storage
 
 import (
 	"errors"
@@ -14,23 +14,22 @@ type StoredEthEndpoints struct {
 	EthEndpoints schema.EthEntry
 }
 
-func (s *StoredEthEndpoints) Add(entry schema.EthEntry) {
+func (s *StoredEthEndpoints) AddEthEndpoints(entry schema.EthEntry) {
 	s.Lock()
 	s.EthEndpoints = entry
 	s.Unlock()
 }
 
-func (s *StoredEthEndpoints) Get() *schema.EthEntry {
+func (s *StoredEthEndpoints) GetEthEndpoints() *schema.EthEntry {
 	s.RLock()
 	defer s.RUnlock()
 	return &s.EthEndpoints
 }
 
-var EthEndpointsFromStorage StoredEthEndpoints
 
-func StartStoring() {
+func StartEthEndpointsStoring() {
 
-	log.Println("Start storing!")
+	log.Println("Start ETH endpoints storing!")
 
 	for {
 		entry, err := db.GetEthEntries()
@@ -39,14 +38,15 @@ func StartStoring() {
 			continue
 		}
 
-		EthEndpointsFromStorage.Add(*entry)
+		EthEndpointsFromStorage.AddEthEndpoints(*entry)
 
 		time.Sleep(time.Minute * 10)
 	}
 }
 
+
 func GetEthEndpoints() ([]string, error) {
-	endpoints := EthEndpointsFromStorage.Get()
+	endpoints := EthEndpointsFromStorage.GetEthEndpoints()
 	if endpoints == nil {
 		return nil, errors.New("Not found")
 	}

@@ -3,8 +3,6 @@ package main
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/server/handlers"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
-	"github.com/button-tech/utils-eth-tokens-getter/storage/endpoints"
-	"github.com/button-tech/utils-eth-tokens-getter/token-list"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
@@ -13,16 +11,10 @@ import (
 
 func init() {
 
-	go endpoints.StartStoring()
-
-	tokens, err := token_list.GetTokenList("./token-list/tokenList.csv")
-	if err != nil {
-		log.Println(err)
-		os.Exit(1)
-	}
+	go storage.StartEthEndpointsStoring()
+	go storage.StartTokenListStoring()
 
 	storage.ContractAddress = os.Getenv("ADDRESS")
-	storage.TokenList = tokens
 
 	log.Println(storage.ContractAddress)
 }

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/button-tech/utils-eth-tokens-getter/contract-wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
-	"github.com/button-tech/utils-eth-tokens-getter/storage/endpoints"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/qiangxue/fasthttp-routing"
 	"math"
@@ -35,13 +34,15 @@ func LookForTokens(c *routing.Context) error {
 		errChan        = make(chan error)
 	)
 
-	for _, j := range storage.TokenList {
+	tokenList := storage.TokenList.GetTokens()
+
+	for _, j := range tokenList {
 		tokenAddresses = append(tokenAddresses, j.Address)
 		tokenSymbols = append(tokenSymbols, j.Symbol)
-		tokenDec = append(tokenDec, j.Dec)
+		tokenDec = append(tokenDec, j.Decimal)
 	}
 
-	es, err := endpoints.GetEthEndpoints()
+	es, err := storage.GetEthEndpoints()
 	if err != nil {
 		return err
 	}
