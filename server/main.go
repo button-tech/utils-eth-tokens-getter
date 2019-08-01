@@ -1,13 +1,13 @@
 package main
 
 import (
+	"github.com/button-tech/utils-eth-tokens-getter/contract_monitoring"
 	"github.com/button-tech/utils-eth-tokens-getter/server/handlers"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/qiangxue/fasthttp-routing"
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
-	"github.com/button-tech/utils-eth-tokens-getter/contract_monitoring"
 )
 
 func init() {

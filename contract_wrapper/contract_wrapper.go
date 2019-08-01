@@ -30,13 +30,13 @@ func GetTokensBalancesByAddress(user common.Address, endpoint string, tokens []s
 	}
 }
 
-func GetTokenBalance(userAddress, tokenAddress string)(error){
+func GetTokenBalance(userAddress, tokenAddress string) error {
 	client, _ := ethclient.Dial("https://mainnet.infura.io")
 
 	instance, _ := contract.NewContract(common.HexToAddress(storage.ContractAddress), client)
 
 	_, err := instance.GetTokenBalance(&bind.CallOpts{}, common.HexToAddress(userAddress), common.HexToAddress(tokenAddress))
-	if err != nil{
+	if err != nil {
 		return err
 	}
 

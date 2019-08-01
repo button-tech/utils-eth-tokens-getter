@@ -61,7 +61,7 @@ func GetTokensEntries() ([]schema.Tokens, error) {
 	return tokens, nil
 }
 
-func DeleteToken(token string)(error){
+func DeleteToken(token string) error {
 	session, err := mgo.DialWithInfo(&info)
 	if err != nil {
 		return err

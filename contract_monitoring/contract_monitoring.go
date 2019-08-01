@@ -2,15 +2,14 @@ package contract_monitoring
 
 import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract_wrapper"
+	"github.com/button-tech/utils-eth-tokens-getter/db"
+	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"log"
 	"os"
 	"time"
-	"github.com/button-tech/utils-eth-tokens-getter/db"
-	"github.com/button-tech/utils-eth-tokens-getter/storage"
 )
 
-
-func StartMonitoring(){
+func StartMonitoring() {
 
 	address := os.Getenv("ETH_ADDRESS_FOR_CHECK")
 
@@ -27,10 +26,10 @@ func StartMonitoring(){
 		for _, j := range tokens {
 
 			err := contract_wrapper.GetTokenBalance(address, j.Address)
-			if err != nil{
+			if err != nil {
 				err := db.DeleteToken(j.Address)
 				log.Println(err)
-				if err != nil{
+				if err != nil {
 					log.Println("Can't delete:" + j.Address)
 					continue
 				} else {
