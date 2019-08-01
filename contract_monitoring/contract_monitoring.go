@@ -25,6 +25,7 @@ func StartMonitoring(){
 		}
 
 		for _, j := range tokens {
+
 			err := contract_wrapper.GetTokenBalance(address, j.Address)
 			if err != nil{
 				err := db.DeleteToken(j.Address)
@@ -38,7 +39,7 @@ func StartMonitoring(){
 
 			}
 
-			time.Sleep(1 * time.Second)
+			time.Sleep(300 * time.Millisecond)
 		}
 
 		log.Println("All token addresses was checked!")
