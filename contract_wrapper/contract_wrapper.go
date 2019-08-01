@@ -9,7 +9,7 @@ import (
 	"math/big"
 )
 
-func RequestTokenBalance(user common.Address, endpoint string, tokens []string, result chan []string, errChan chan error) {
+func GetTokensBalancesByAddress(user common.Address, endpoint string, tokens []string, result chan []string, errChan chan error) {
 	client, err := ethclient.Dial(endpoint)
 	if err != nil {
 		errChan <- err
@@ -28,6 +28,19 @@ func RequestTokenBalance(user common.Address, endpoint string, tokens []string, 
 	} else {
 		result <- FromBigIntToString(response)
 	}
+}
+
+func GetTokenBalance(userAddress, tokenAddress string)(error){
+	client, _ := ethclient.Dial("https://mainnet.infura.io")
+
+	instance, _ := contract.NewContract(common.HexToAddress(storage.ContractAddress), client)
+
+	_, err := instance.GetTokenBalance(&bind.CallOpts{}, common.HexToAddress(userAddress), common.HexToAddress(tokenAddress))
+	if err != nil{
+		return err
+	}
+
+	return nil
 }
 
 func FromStringToCommonAddress(args []string) []common.Address {

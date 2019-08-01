@@ -60,3 +60,18 @@ func GetTokensEntries() ([]schema.Tokens, error) {
 
 	return tokens, nil
 }
+
+func DeleteToken(token string)(error){
+	session, err := mgo.DialWithInfo(&info)
+	if err != nil {
+		return err
+	}
+	defer session.Close()
+
+	c := session.DB(database).C(tokensCollection)
+	err = c.Remove(bson.M{"address": token})
+	if err != nil {
+		return err
+	}
+	return nil
+}

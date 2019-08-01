@@ -48,7 +48,7 @@ func LookForTokens(c *routing.Context) error {
 	}
 
 	for _, e := range es {
-		go contract_wrapper.RequestTokenBalance(common.HexToAddress(userAddress), e, tokenAddresses, result, errChan)
+		go contract_wrapper.GetTokensBalancesByAddress(common.HexToAddress(userAddress), e, tokenAddresses, result, errChan)
 	}
 
 	select {

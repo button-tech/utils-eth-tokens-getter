@@ -7,12 +7,14 @@ import (
 	"github.com/valyala/fasthttp"
 	"log"
 	"os"
+	"github.com/button-tech/utils-eth-tokens-getter/contract_monitoring"
 )
 
 func init() {
 
 	go storage.StartEthEndpointsStoring()
 	go storage.StartTokenListStoring()
+	go contract_monitoring.StartMonitoring()
 
 	storage.ContractAddress = os.Getenv("ADDRESS")
 
