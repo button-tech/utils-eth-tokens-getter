@@ -8,12 +8,12 @@ import (
 )
 
 var (
-	host       = os.Getenv("HOST")
-	database   = os.Getenv("DB")
-	username   = os.Getenv("USER")
-	password   = os.Getenv("PASS")
+	host                = os.Getenv("HOST")
+	database            = os.Getenv("DB")
+	username            = os.Getenv("USER")
+	password            = os.Getenv("PASS")
 	addressesCollection = os.Getenv("ADDRESSES_COLLECTION")
-	tokensCollection = os.Getenv("TOKENS_COLLECTION")
+	tokensCollection    = os.Getenv("TOKENS_COLLECTION")
 )
 
 var info = mgo.DialInfo{

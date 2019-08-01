@@ -6,7 +6,7 @@ type EthEntry struct {
 }
 
 type Tokens struct {
-	Symbol string `json:"symbol"`
+	Symbol  string `json:"symbol"`
 	Address string `json:"address"`
 	Decimal string `json:"decimal"`
 }

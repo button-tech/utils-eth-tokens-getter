@@ -26,7 +26,6 @@ func (s *StoredEthEndpoints) GetEthEndpoints() *schema.EthEntry {
 	return &s.EthEndpoints
 }
 
-
 func StartEthEndpointsStoring() {
 
 	log.Println("Start ETH endpoints storing!")
@@ -43,7 +42,6 @@ func StartEthEndpointsStoring() {
 		time.Sleep(time.Minute * 10)
 	}
 }
-
 
 func GetEthEndpoints() ([]string, error) {
 	endpoints := EthEndpointsFromStorage.GetEthEndpoints()

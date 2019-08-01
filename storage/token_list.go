@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"sync"
-	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
 	"github.com/button-tech/utils-eth-tokens-getter/db"
-	"time"
+	"github.com/button-tech/utils-eth-tokens-getter/db/schema"
 	"log"
+	"sync"
+	"time"
 )
 
 type StoredTokenList struct {
@@ -13,19 +13,19 @@ type StoredTokenList struct {
 	Tokens []schema.Tokens
 }
 
-func(t *StoredTokenList) AddTokens(entries []schema.Tokens){
+func (t *StoredTokenList) AddTokens(entries []schema.Tokens) {
 	t.Lock()
 	t.Tokens = entries
 	t.Unlock()
 }
 
-func(t *StoredTokenList) GetTokens() []schema.Tokens {
+func (t *StoredTokenList) GetTokens() []schema.Tokens {
 	t.RLock()
 	defer t.RUnlock()
 	return t.Tokens
 }
 
-func StartTokenListStoring(){
+func StartTokenListStoring() {
 
 	log.Println("Start token list storing!")
 
@@ -38,12 +38,6 @@ func StartTokenListStoring(){
 
 		TokenList.AddTokens(entries)
 
-		log.Println(TokenList.GetTokens())
-
 		time.Sleep(time.Minute * 1)
 	}
 }
-
-
-
-
