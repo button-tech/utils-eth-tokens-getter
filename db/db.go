@@ -13,6 +13,7 @@ var (
 	username   = os.Getenv("USER")
 	password   = os.Getenv("PASS")
 	collection = os.Getenv("COLLECTION")
+
 )
 
 var info = mgo.DialInfo{
