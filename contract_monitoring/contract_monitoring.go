@@ -27,15 +27,15 @@ func StartMonitoring() {
 
 			err := contract_wrapper.GetTokenBalance(address, j.Address)
 			if err != nil {
-				err := db.DeleteToken(j.Address)
-				log.Println(err)
-				if err != nil {
-					log.Println("Can't delete:" + j.Address)
-					continue
-				} else {
-					log.Println("Successfully delete:" + j.Address)
+				if err.Error() == "abi: unmarshalling empty output" || err.Error() == "VM execution error." {
+					err := db.DeleteToken(j.Address)
+					if err != nil {
+						log.Println("Can't delete:" + j.Address)
+						continue
+					} else {
+						log.Println("Successfully delete:" + j.Address)
+					}
 				}
-
 			}
 
 			time.Sleep(300 * time.Millisecond)
