@@ -53,6 +53,15 @@ func LookForTokens(c *routing.Context) error {
 		return err
 	}
 
+	if len(tokenList.Docs) == 0 {
+		balance.Data = []TokenInfo{}
+		err := JsonResponse(c, balance)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
 	for _, j := range tokenList.Docs {
 		tokenAddresses = append(tokenAddresses, j.TokenID)
 		tokenSymbols = append(tokenSymbols, j.Symbol)
@@ -84,10 +93,6 @@ func LookForTokens(c *routing.Context) error {
 
 				balance.Data = append(balance.Data, TokenInfo{Amount: resultFloat, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
 			}
-		}
-
-		if len(balance.Data) == 0 {
-			balance.Data = []TokenInfo{}
 		}
 
 		err := JsonResponse(c, balance)
