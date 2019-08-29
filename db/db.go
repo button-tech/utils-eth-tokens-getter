@@ -13,7 +13,6 @@ var (
 	username            = os.Getenv("USER")
 	password            = os.Getenv("PASS")
 	addressesCollection = os.Getenv("ADDRESSES_COLLECTION")
-	tokensCollection    = os.Getenv("TOKENS_COLLECTION")
 )
 
 var info = mgo.DialInfo{
@@ -40,38 +39,4 @@ func GetEthEntries() (*schema.EthEntry, error) {
 	}
 
 	return &addrs, nil
-}
-
-func GetTokensEntries() ([]schema.Tokens, error) {
-	session, err := mgo.DialWithInfo(&info)
-	if err != nil {
-		return nil, err
-	}
-	defer session.Close()
-
-	var tokens []schema.Tokens
-
-	c := session.DB(database).C(tokensCollection)
-
-	err = c.Find(nil).All(&tokens)
-	if err != nil {
-		return nil, err
-	}
-
-	return tokens, nil
-}
-
-func DeleteToken(token string) error {
-	session, err := mgo.DialWithInfo(&info)
-	if err != nil {
-		return err
-	}
-	defer session.Close()
-
-	c := session.DB(database).C(tokensCollection)
-	err = c.Remove(bson.M{"address": token})
-	if err != nil {
-		return err
-	}
-	return nil
 }

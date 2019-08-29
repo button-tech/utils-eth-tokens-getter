@@ -6,14 +6,28 @@ import (
 	"github.com/button-tech/utils-eth-tokens-getter/contract_wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
 	"math"
+	"os"
 	"strconv"
 	"time"
 )
 
 type UserTokenBalances struct {
 	Data []TokenInfo `json:"data"`
+}
+
+type Token struct {
+	Name     string `json:"name"`
+	Symbol   string `json:"symbol"`
+	Decimals int    `json:"decimals"`
+	TokenID  string `json:"tokenID"`
+	Coin     int    `json:"coin"`
+}
+
+type ApiResponse struct {
+	Docs []Token `json:"docs"`
 }
 
 type TokenInfo struct {
@@ -27,19 +41,22 @@ func LookForTokens(c *routing.Context) error {
 	var (
 		tokenAddresses []string
 		tokenSymbols   []string
-		tokenDec       []string
+		tokenDec       []int
 		balance        UserTokenBalances
 		userAddress    = c.Param("address")
 		result         = make(chan []string)
 		errChan        = make(chan error)
 	)
 
-	tokenList := storage.TokenList.GetTokens()
+	tokenList, err := GetTokensListByAddress(userAddress)
+	if err != nil {
+		return err
+	}
 
-	for _, j := range tokenList {
-		tokenAddresses = append(tokenAddresses, j.Address)
+	for _, j := range tokenList.Docs {
+		tokenAddresses = append(tokenAddresses, j.TokenID)
 		tokenSymbols = append(tokenSymbols, j.Symbol)
-		tokenDec = append(tokenDec, j.Decimal)
+		tokenDec = append(tokenDec, j.Decimals)
 	}
 
 	es, err := storage.GetEthEndpoints()
@@ -61,10 +78,7 @@ func LookForTokens(c *routing.Context) error {
 					return err
 				}
 
-				decFloat, err := strconv.ParseFloat(tokenDec[i], 64)
-				if err != nil {
-					return err
-				}
+				decFloat := float64(tokenDec[i])
 
 				resultFloat := balanceFloat / math.Pow(10, decFloat)
 
@@ -88,6 +102,22 @@ func LookForTokens(c *routing.Context) error {
 	}
 
 	return nil
+}
+
+func GetTokensListByAddress(address string) (*ApiResponse, error) {
+	var result ApiResponse
+
+	res, err := req.Get(os.Getenv("TOKEN_API") + address)
+	if err != nil {
+		return nil, err
+	}
+
+	err = res.ToJSON(&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 func JsonResponse(ctx *routing.Context, data interface{}) error {
