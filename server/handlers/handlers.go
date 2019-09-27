@@ -22,7 +22,7 @@ type Token struct {
 	Name     string `json:"name"`
 	Symbol   string `json:"symbol"`
 	Decimals int    `json:"decimals"`
-	TokenID  string `json:"tokenID"`
+	TokenID  string `json:"token_id"`
 	Coin     int    `json:"coin"`
 }
 
