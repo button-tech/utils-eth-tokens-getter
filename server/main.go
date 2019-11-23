@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-eth-tokens-getter/server/handlers"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/qiangxue/fasthttp-routing"
@@ -10,6 +11,9 @@ import (
 )
 
 func init() {
+	if err := logger.InitLogger(os.Getenv("DSN")); err != nil {
+		log.Fatal(err)
+	}
 
 	go storage.StartEthEndpointsStoring()
 

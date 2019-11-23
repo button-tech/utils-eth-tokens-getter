@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/button-tech/logger"
 	"github.com/button-tech/utils-eth-tokens-getter/contract_wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
 	"github.com/ethereum/go-ethereum/common"
@@ -38,6 +39,8 @@ type TokenInfo struct {
 
 func LookForTokens(c *routing.Context) error {
 
+	start := time.Now()
+
 	var (
 		tokenAddresses []string
 		tokenSymbols   []string
@@ -50,6 +53,9 @@ func LookForTokens(c *routing.Context) error {
 
 	tokenList, err := GetTokensListByAddress(userAddress)
 	if err != nil {
+		logger.Error("GetTokensListByAddress", err.Error(), logger.Params{
+			"userAddress": userAddress,
+		})
 		return err
 	}
 
@@ -70,6 +76,7 @@ func LookForTokens(c *routing.Context) error {
 
 	es, err := storage.GetEthEndpoints()
 	if err != nil {
+		logger.Error("GetEthEndpoints", err.Error())
 		return err
 	}
 
@@ -84,6 +91,7 @@ func LookForTokens(c *routing.Context) error {
 
 				balanceFloat, err := strconv.ParseFloat(contractAnswer[i], 64)
 				if err != nil {
+					logger.Error("ParseFloat", err.Error())
 					return err
 				}
 
@@ -101,10 +109,14 @@ func LookForTokens(c *routing.Context) error {
 		}
 
 	case err := <-errChan:
+		logger.Error("GetTokensBalancesByAddress", err.Error())
 		return err
 	case <-time.After(2 * time.Second):
+		logger.Error("Bad request or timeout")
 		return errors.New("Bad request or timeout")
 	}
+
+	logger.LogRequest(time.Since(start), "ETH", "GetTokenBalance")
 
 	return nil
 }
