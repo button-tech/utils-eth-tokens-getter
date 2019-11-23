@@ -116,7 +116,7 @@ func LookForTokens(c *routing.Context) error {
 		return errors.New("Bad request or timeout")
 	}
 
-	logger.LogRequest(time.Since(start), "ETH", "GetTokenBalance")
+	logger.LogRequest(time.Since(start), "ETH", "GetTokenBalance", true)
 
 	return nil
 }
