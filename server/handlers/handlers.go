@@ -35,6 +35,7 @@ type TokenInfo struct {
 	Token    string  `json:"token"`
 	Amount   float64 `json:"amount"`
 	Currency string  `json:"currency"`
+	Decimals int   `json:"decimals"`
 }
 
 func LookForTokens(c *routing.Context) error {
@@ -99,7 +100,7 @@ func LookForTokens(c *routing.Context) error {
 
 				resultFloat := balanceFloat / math.Pow(10, decFloat)
 
-				balance.Data = append(balance.Data, TokenInfo{Amount: resultFloat, Currency: tokenSymbols[i], Token: tokenAddresses[i]})
+				balance.Data = append(balance.Data, TokenInfo{Amount: resultFloat, Currency: tokenSymbols[i], Token: tokenAddresses[i], Decimals:tokenDec[i]})
 			}
 		}
 
