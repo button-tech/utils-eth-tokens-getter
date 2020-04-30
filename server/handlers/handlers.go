@@ -4,52 +4,29 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/button-tech/logger"
-	"github.com/button-tech/utils-eth-tokens-getter/contract_wrapper"
 	"github.com/button-tech/utils-eth-tokens-getter/storage"
+	"github.com/button-tech/utils-eth-tokens-getter/wrapper"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/imroc/req"
 	"github.com/qiangxue/fasthttp-routing"
-	"math"
 	"os"
-	"strconv"
 	"time"
 )
 
 type UserTokenBalances struct {
-	Data []TokenInfo `json:"data"`
-}
-
-type Token struct {
-	Name     string `json:"name"`
-	Symbol   string `json:"symbol"`
-	Decimals int    `json:"decimals"`
-	TokenID  string `json:"token_id"`
-	Coin     int    `json:"coin"`
+	Data []wrapper.TokenInfo `json:"data"`
 }
 
 type ApiResponse struct {
-	Docs []Token `json:"docs"`
-}
-
-type TokenInfo struct {
-	Token    string  `json:"token"`
-	Amount   float64 `json:"amount"`
-	Currency string  `json:"currency"`
-	Decimals int   `json:"decimals"`
+	Docs []wrapper.Token `json:"docs"`
 }
 
 func LookForTokens(c *routing.Context) error {
-
 	start := time.Now()
-
 	var (
-		tokenAddresses []string
-		tokenSymbols   []string
-		tokenDec       []int
-		balance        UserTokenBalances
-		userAddress    = c.Param("address")
-		result         = make(chan []string)
-		errChan        = make(chan error)
+		balance     UserTokenBalances
+		userAddress = c.Param("address")
+		result      = make(chan []wrapper.TokenInfo)
 	)
 
 	tokenList, err := GetTokensListByAddress(userAddress)
@@ -61,18 +38,12 @@ func LookForTokens(c *routing.Context) error {
 	}
 
 	if len(tokenList.Docs) == 0 {
-		balance.Data = []TokenInfo{}
+		balance.Data = []wrapper.TokenInfo{}
 		err := JsonResponse(c, balance)
 		if err != nil {
 			return err
 		}
 		return nil
-	}
-
-	for _, j := range tokenList.Docs {
-		tokenAddresses = append(tokenAddresses, j.TokenID)
-		tokenSymbols = append(tokenSymbols, j.Symbol)
-		tokenDec = append(tokenDec, j.Decimals)
 	}
 
 	es, err := storage.GetEthEndpoints()
@@ -82,37 +53,16 @@ func LookForTokens(c *routing.Context) error {
 	}
 
 	for _, e := range es {
-		go contract_wrapper.GetTokensBalancesByAddress(common.HexToAddress(userAddress), e, tokenAddresses, result, errChan)
+		go wrapper.GetTokensBalancesByAddress(common.HexToAddress(userAddress), e, tokenList.Docs, result)
 	}
 
 	select {
 	case contractAnswer := <-result:
-		for i := 0; i < len(contractAnswer); i++ {
-			if contractAnswer[i] != "0" {
-
-				balanceFloat, err := strconv.ParseFloat(contractAnswer[i], 64)
-				if err != nil {
-					logger.Error("ParseFloat", err.Error())
-					return err
-				}
-
-				decFloat := float64(tokenDec[i])
-
-				resultFloat := balanceFloat / math.Pow(10, decFloat)
-
-				balance.Data = append(balance.Data, TokenInfo{Amount: resultFloat, Currency: tokenSymbols[i], Token: tokenAddresses[i], Decimals:tokenDec[i]})
-			}
-		}
-
-		err := JsonResponse(c, balance)
+		err := JsonResponse(c, UserTokenBalances{Data: contractAnswer})
 		if err != nil {
 			return err
 		}
-
-	case err := <-errChan:
-		logger.Error("GetTokensBalancesByAddress", err.Error())
-		return err
-	case <-time.After(2 * time.Second):
+	case <-time.After(3 * time.Second):
 		logger.Error("Bad request or timeout")
 		return errors.New("Bad request or timeout")
 	}
