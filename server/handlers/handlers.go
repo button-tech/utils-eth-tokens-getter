@@ -17,9 +17,7 @@ type UserTokenBalances struct {
 	Data []wrapper.TokenInfo `json:"data"`
 }
 
-type ApiResponse struct {
-	Docs []wrapper.Token `json:"docs"`
-}
+type ApiResponse []wrapper.Token
 
 func LookForTokens(c *routing.Context) error {
 	start := time.Now()
@@ -37,7 +35,7 @@ func LookForTokens(c *routing.Context) error {
 		return err
 	}
 
-	if len(tokenList.Docs) == 0 {
+	if len(tokenList) == 0 {
 		balance.Data = []wrapper.TokenInfo{}
 		err := JsonResponse(c, balance)
 		if err != nil {
@@ -53,7 +51,7 @@ func LookForTokens(c *routing.Context) error {
 	}
 
 	for _, e := range es {
-		go wrapper.GetTokensBalancesByAddress(common.HexToAddress(userAddress), e, tokenList.Docs, result)
+		go wrapper.GetTokensBalancesByAddress(common.HexToAddress(userAddress), e, tokenList, result)
 	}
 
 	select {
@@ -72,7 +70,7 @@ func LookForTokens(c *routing.Context) error {
 	return nil
 }
 
-func GetTokensListByAddress(address string) (*ApiResponse, error) {
+func GetTokensListByAddress(address string) (ApiResponse, error) {
 	var result ApiResponse
 
 	res, err := req.Get(os.Getenv("TOKEN_API") + address)
@@ -85,7 +83,7 @@ func GetTokensListByAddress(address string) (*ApiResponse, error) {
 		return nil, err
 	}
 
-	return &result, nil
+	return result, nil
 }
 
 func JsonResponse(ctx *routing.Context, data interface{}) error {
